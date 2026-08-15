@@ -12,6 +12,8 @@ jobs:
           sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
           xcodebuild -showsdks
+      - name: Install build dependency
+        run: brew install swiftlint
       - name: Build unsigned iOS framework
         run: |
           set -euo pipefail
