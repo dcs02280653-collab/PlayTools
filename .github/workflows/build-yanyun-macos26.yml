@@ -12,12 +12,10 @@ jobs:
           sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
           xcodebuild -showsdks
-      - name: Install build dependency
-        run: brew install swiftlint
       - name: Build unsigned iOS framework
         run: |
           set -euo pipefail
-          xcodebuild             -project PlayTools.xcodeproj             -target PlayTools             -configuration Release             -sdk iphoneos             SYMROOT="$PWD/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             build
+          FASTLANE=1 xcodebuild             -project PlayTools.xcodeproj             -target PlayTools             -configuration Release             -sdk iphoneos             SYMROOT="$PWD/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             build
       - name: Convert PlayTools binary to Mac Catalyst
         run: |
           set -euo pipefail
