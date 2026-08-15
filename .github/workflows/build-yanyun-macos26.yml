@@ -15,11 +15,11 @@ jobs:
       - name: Build unsigned iOS framework
         run: |
           set -euo pipefail
-          xcodebuild             -project PlayTools.xcodeproj             -target PlayTools             -configuration Release             -sdk iphoneos             -derivedDataPath "$PWD/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             build
+          xcodebuild             -project PlayTools.xcodeproj             -target PlayTools             -configuration Release             -sdk iphoneos             SYMROOT="$PWD/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             build
       - name: Convert PlayTools binary to Mac Catalyst
         run: |
           set -euo pipefail
-          FRAMEWORK="$PWD/build/Build/Products/Release-iphoneos/PlayTools.framework"
+          FRAMEWORK="$PWD/build/Release-iphoneos/PlayTools.framework"
           test -f "$FRAMEWORK/PlayTools"
           xcrun vtool             -set-build-version maccatalyst 15.0 26.0             -replace -output "$FRAMEWORK/PlayTools.patched"             "$FRAMEWORK/PlayTools"
           mv "$FRAMEWORK/PlayTools.patched" "$FRAMEWORK/PlayTools"
