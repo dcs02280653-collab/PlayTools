@@ -15,6 +15,9 @@ jobs:
       - name: Build unsigned iOS framework
         run: |
           set -euo pipefail
+          FASTLANE=1 xcodebuild             -project PlayTools.xcodeproj             -target AKInterface             -configuration Release             -sdk macosx             SYMROOT="$PWD/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             build
+          mkdir -p "$PWD/build/Release-iphoneos"
+          cp -R "$PWD/build/Release/AKInterface.bundle" "$PWD/build/Release-iphoneos/"
           FASTLANE=1 xcodebuild             -project PlayTools.xcodeproj             -target PlayTools             -configuration Release             -sdk iphoneos             SYMROOT="$PWD/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             build
       - name: Convert PlayTools binary to Mac Catalyst
         run: |
