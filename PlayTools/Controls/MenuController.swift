@@ -113,6 +113,26 @@ var keymappingSelectors = [#selector(UIApplication.switchEditorMode(_:)),
 
 class MenuController {
     init(with builder: UIMenuBuilder) {
+    #if canImport(UIKit.UIMainMenuSystem)
+        if #available(iOS 26.0, *) {
+            // macOS 26 builds the UIKit menu asynchronously. Registering while
+            // it is already building is rejected, so configure it one tick later.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                let configuration = UIMainMenuSystem.Configuration()
+                configuration.sidebarPreference = .included
+                UIMainMenuSystem.shared.setBuildConfiguration(configuration) { builder in
+                    self.setupMenu(with: builder)
+                }
+            }
+        } else {
+            setupMenu(with: builder)
+        }
+    #else
+        setupMenu(with: builder)
+    #endif
+    }
+
+    private func setupMenu(with builder: UIMenuBuilder) {
         if Toucher.logEnabled {
             builder.insertSibling(MenuController.debuggingMenu(), afterMenu: .view)
         }

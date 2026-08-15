@@ -1,0 +1,32 @@
+name: Build Yanyun macOS 26 PlayTools
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer || true
+          xcodebuild -version
+      - name: Build unsigned iOS framework
+        run: |
+          set -euo pipefail
+          xcodebuild             -project PlayTools.xcodeproj             -scheme PlayTools             -configuration Release             -sdk iphoneos             -destination 'generic/platform=iOS'             -derivedDataPath "$PWD/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             build
+      - name: Convert PlayTools binary to Mac Catalyst
+        run: |
+          set -euo pipefail
+          FRAMEWORK="$PWD/build/Build/Products/Release-iphoneos/PlayTools.framework"
+          test -f "$FRAMEWORK/PlayTools"
+          xcrun vtool             -set-build-version maccatalyst 15.0 26.0             -replace -output "$FRAMEWORK/PlayTools.patched"             "$FRAMEWORK/PlayTools"
+          mv "$FRAMEWORK/PlayTools.patched" "$FRAMEWORK/PlayTools"
+          codesign --force --sign - "$FRAMEWORK/PlayTools"
+          shasum -a 256 "$FRAMEWORK/PlayTools" > "$FRAMEWORK/PlayTools.sha256"
+          ditto -c -k --sequesterRsrc --keepParent "$FRAMEWORK" Yanyun-PlayTools-v3.1.0-macOS26.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Yanyun-PlayTools-v3.1.0-macOS26
+          path: Yanyun-PlayTools-v3.1.0-macOS26.zip
+          if-no-files-found: error
