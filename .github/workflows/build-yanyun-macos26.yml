@@ -15,7 +15,7 @@ jobs:
       - name: Build unsigned iOS framework
         run: |
           set -euo pipefail
-          xcodebuild             -project PlayTools.xcodeproj             -scheme PlayTools             -configuration Release             -sdk iphoneos             -destination 'generic/platform=iOS'             -derivedDataPath "$PWD/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             build
+          xcodebuild             -project PlayTools.xcodeproj             -target PlayTools             -configuration Release             -sdk iphoneos             -derivedDataPath "$PWD/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             build
       - name: Convert PlayTools binary to Mac Catalyst
         run: |
           set -euo pipefail
